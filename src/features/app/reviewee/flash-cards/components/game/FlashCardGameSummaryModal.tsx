@@ -29,7 +29,7 @@ export default function FlashCardGameSummaryModal(
         flashCardGameSummaryModal.isPerfectResult ? <GameConfetti /> : undefined
       }
     >
-      <div className="min-h-0 flex-1 overflow-y-auto pb-4 sm:overflow-visible sm:pb-0">
+      <div className="min-h-0 flex-1 overflow-y-auto pb-4 sm:pb-0">
         <GameSummaryHeader
           metadata={props.summary.areaName}
           title={

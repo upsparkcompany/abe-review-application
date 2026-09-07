@@ -25,7 +25,7 @@ export default function GameSummaryModal(props: GameSummaryModalProps) {
       overlayClassName="bg-slate-950/45"
       underlay={gameSummaryModal.isPerfectResult ? <GameConfetti /> : undefined}
     >
-      <div className="min-h-0 flex-1 overflow-y-auto pb-4 sm:overflow-visible sm:pb-0">
+      <div className="min-h-0 flex-1 overflow-y-auto pb-4 sm:pb-0">
         <GameSummaryHeader
           metadata={[
             props.summary.areaName,
