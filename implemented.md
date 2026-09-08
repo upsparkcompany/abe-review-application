@@ -1,5 +1,11 @@
 # Implemented Features
 
+- Login: desktop image and form panels fill the dynamic viewport height, with form-only scrolling when needed; mobile keeps its flexible hero and scrolls when the form outgrows the viewport. Removed redundant desktop form-bottom padding.
+
+- App Layout: the main scroller contains absolutely positioned screen-reader loading labels, preventing an extra document scrollbar during admin loading while preserving native content scrolling below the navbar.
+
+- App Layout: Tailwind utilities extend the shared admin and reviewee main scroller to the viewport's right edge while preserving the centered content width and placement and fixed navbar and sidebar.
+
 - Dashboard data queries now share a session-lifetime TanStack Query cache, keeping previously visited sidebar pages visible during background refreshes and clearing cached account data after logout.
 
 - Supabase connections now use the publishable and secret API keys instead of the legacy anon and service-role keys across browser, SSR, server-action, proxy, admin, and password-recovery flows.

@@ -1,5 +1,11 @@
 # Implemented Rules
 
+- Login keeps the desktop image's existing cover alignment at viewport height; overflowing desktop form content and short-screen mobile content must remain reachable through native scrolling.
+
+- Keep the shared dashboard main scroller positioned so screen-reader-only loading labels remain contained within its scroll area instead of extending document overflow.
+
+- Admin and reviewee dashboard content keeps its native scrollbar visible when needed at the viewport's right edge; preserve the centered content width and placement without hidden or custom overlay scrollbars.
+
 - This project uses the local Supabase workflow. Put every database schema, policy, function, and privilege change in a new migration under `supabase/migrations/`.
 - Existing files in `supabase/migrations/` are immutable migration history; never edit old migration files. Create new migrations through the local Supabase CLI so it generates the migration timestamp and filename rather than manually timestamping SQL files.
 - Manage Reviewees invitation sends are logged in the database and atomically throttled per reviewee for one minute; failed email-provider requests do not consume the cooldown.

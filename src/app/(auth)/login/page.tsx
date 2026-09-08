@@ -12,17 +12,17 @@ export default function LoginPage() {
   const loginPage = useLogin();
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden bg-surface lg:h-auto lg:min-h-screen lg:flex-row lg:overflow-visible">
+    <main className="flex h-dvh flex-col overflow-y-auto bg-surface lg:flex-row lg:overflow-hidden">
       <MobileLoginHero />
       <AuthImagePanel />
 
-      <section className="relative z-10 -mt-16 flex w-full shrink-0 justify-center rounded-t-[4rem] bg-surface px-6 pb-8 pt-14 text-black sm:-mt-20 sm:rounded-t-[5rem] sm:px-10 sm:pb-10 sm:pt-16 lg:mt-0 lg:min-h-screen lg:w-2/5 lg:rounded-none lg:px-12 lg:py-16 xl:px-20">
-        <div className="flex w-full max-w-md flex-col">
+      <section className="relative z-10 -mt-16 flex w-full shrink-0 justify-center rounded-t-[4rem] bg-surface px-6 pb-8 pt-14 text-black sm:-mt-20 sm:rounded-t-[5rem] sm:px-10 sm:pb-10 sm:pt-16 lg:mt-0 lg:h-full lg:min-h-0 lg:w-2/5 lg:overflow-y-auto lg:rounded-none lg:px-12 lg:py-16 xl:px-20">
+        <div className="flex w-full max-w-md flex-col lg:min-h-fit">
           <div className="hidden lg:block">
             <AuthBrand />
           </div>
 
-          <div className="lg:my-auto lg:py-14">
+          <div className="lg:my-auto lg:pt-14">
             <div className="mb-6 sm:mb-8 lg:mb-10">
               <h1 className="text-3xl font-semibold tracking-tight text-primary-text sm:text-4xl lg:text-3xl">
                 Grow Your Knowledge

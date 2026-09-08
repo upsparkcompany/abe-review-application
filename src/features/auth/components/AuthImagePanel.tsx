@@ -3,7 +3,7 @@ import authBackground from "@/public/authBackground.jpg";
 
 export default function AuthImagePanel() {
   return (
-    <section className="relative hidden min-h-screen w-3/5 overflow-hidden rounded-tr-[7.5rem] lg:block">
+    <section className="relative hidden h-full w-3/5 shrink-0 overflow-hidden rounded-tr-[7.5rem] lg:block">
       <Image
         src={authBackground}
         alt="An open book"
