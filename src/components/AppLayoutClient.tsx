@@ -4,34 +4,57 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import AuthenticationSuccessNotice from "@/features/app/layout/components/AuthenticationSuccessNotice";
 import InactiveAccountModal from "@/features/app/layout/components/InactiveAccountModal";
+import SessionExpiredModal from "@/features/app/layout/components/SessionExpiredModal";
 import { useAccountAccess } from "@/features/app/layout/hooks/useAccountAccess";
 import type { AppRole } from "@/features/app/layout/types/appRole";
 import QueryProvider from "@/providers/QueryProvider";
 import { GameSoundProvider } from "@/providers/GameSoundProvider";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { consumeIntentionalSignOut } from "@/lib/auth/client-session-events";
 
 type AppLayoutClientProps = {
   children: React.ReactNode;
   initialIsInactive: boolean;
+  initialSessionExpired: boolean;
   role: AppRole | null;
 };
 
 export default function AppLayoutClient({
   children,
   initialIsInactive,
+  initialSessionExpired,
   role,
 }: AppLayoutClientProps) {
   const { isInactive } = useAccountAccess(initialIsInactive);
+  const [isSessionExpired, setIsSessionExpired] = useState(
+    initialSessionExpired,
+  );
+  const isAppBlocked = isInactive || isSessionExpired;
+
+  useEffect(() => {
+    if (initialSessionExpired) return;
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_OUT" || consumeIntentionalSignOut()) return;
+
+      setIsSessionExpired(true);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [initialSessionExpired]);
 
   return (
     <QueryProvider>
       <GameSoundProvider>
         <div className="h-dvh overflow-hidden bg-primary-bg text-primary-text">
           <div
-            aria-hidden={isInactive || undefined}
-            inert={isInactive || undefined}
+            aria-hidden={isAppBlocked || undefined}
+            inert={isAppBlocked || undefined}
             className={`flex h-full flex-col transition-[filter] duration-200 ${
-              isInactive ? "pointer-events-none select-none blur-sm" : ""
+              isAppBlocked ? "pointer-events-none select-none blur-sm" : ""
             }`}
           >
             <Suspense fallback={null}>
@@ -49,6 +72,7 @@ export default function AppLayoutClient({
             </div>
           </div>
           <InactiveAccountModal isOpen={isInactive} />
+          <SessionExpiredModal isOpen={isSessionExpired} />
         </div>
       </GameSoundProvider>
     </QueryProvider>

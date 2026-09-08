@@ -1,6 +1,10 @@
 "use client";
 
 import type { AppRole } from "@/features/app/layout/types/appRole";
+import {
+  clearIntentionalSignOut,
+  markIntentionalSignOut,
+} from "@/lib/auth/client-session-events";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/providers/AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,6 +30,7 @@ export const useNavbar = (role: AppRole | null) => {
 
     setLogoutEmail(user?.email ?? "");
     setIsLoggingOut(true);
+    markIntentionalSignOut();
 
     try {
       const { error } = await supabase.auth.signOut();
@@ -37,6 +42,7 @@ export const useNavbar = (role: AppRole | null) => {
       router.refresh();
     } catch (error) {
       console.error(error);
+      clearIntentionalSignOut();
       setIsLoggingOut(false);
     }
   };

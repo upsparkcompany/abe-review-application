@@ -134,3 +134,4 @@
 - Activity History: review streak uses a friendly sad-face illustration when the effective streak is zero and the fire illustration for every active streak.
 - Modal behavior: dialog content uses its natural height until constrained by the available dynamic viewport height, then scrolls internally; mobile MCQ and flash-card gameplay remain full-screen with their option or answer region scrollable.
 - Activity-history details clear their cached state on close so loading a new session begins with the generic Activity Details header.
+- Authentication: protected routes with no auth cookie redirect immediately to login, while invalid Supabase auth cookies display a non-dismissible blurred session-expired modal in the current dashboard URL before local sign-out and an automatic login redirect.

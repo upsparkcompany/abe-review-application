@@ -1,6 +1,10 @@
 "use client";
 
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import {
+  clearIntentionalSignOut,
+  markIntentionalSignOut,
+} from "@/lib/auth/client-session-events";
 import { supabase } from "@/lib/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -42,10 +46,12 @@ export const useInactiveAccountModal = (isOpen: boolean) => {
 
     setIsLoggingOut(true);
     setLogoutError("");
+    markIntentionalSignOut();
 
     const { error } = await supabase.auth.signOut();
 
     if (error) {
+      clearIntentionalSignOut();
       setLogoutError("Unable to log out right now. Please try again.");
       setIsLoggingOut(false);
       return;

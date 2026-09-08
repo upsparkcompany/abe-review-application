@@ -4,6 +4,10 @@ import { createSupabaseProxyClient } from "./lib/supabase/proxy";
 import { getAuthRouteIdentity } from "./lib/auth/route-identity";
 import { protectedRoutes, authRoutes } from "./lib/auth/route-protection";
 import {
+  hasSupabaseAuthCookie,
+  SESSION_EXPIRED_REQUEST_HEADER,
+} from "./lib/auth/session-expiry";
+import {
   AUTH_NOTICES,
   AUTH_NOTICE_QUERY_PARAMETER,
 } from "./features/app/layout/constants/authNotices";
@@ -125,8 +129,34 @@ function createRedirectResponse(
   return redirectResponse;
 }
 
+function createSessionExpiredResponse(
+  request: NextRequest,
+  supabaseResponse: NextResponse,
+) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(SESSION_EXPIRED_REQUEST_HEADER, "1");
+
+  const sessionExpiredResponse = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+
+  supabaseResponse.cookies.getAll().forEach((cookie) => {
+    sessionExpiredResponse.cookies.set(cookie);
+  });
+
+  ["cache-control", "expires", "pragma"].forEach((header) => {
+    const value = supabaseResponse.headers.get(header);
+    if (value) sessionExpiredResponse.headers.set(header, value);
+  });
+
+  clearRedirectLoopCookies(sessionExpiredResponse);
+
+  return sessionExpiredResponse;
+}
+
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
+  const hasAuthCookie = hasSupabaseAuthCookie(request.cookies.getAll());
 
   const { supabase, getResponse } = createSupabaseProxyClient(
     request,
@@ -149,6 +179,10 @@ export async function proxy(request: NextRequest) {
     !isAcceptInviteRoute &&
     pathname !== "/unauthorized"
   ) {
+    if (hasAuthCookie) {
+      return createSessionExpiredResponse(request, supabaseResponse);
+    }
+
     return createRedirectResponse(
       request,
       new URL("/login", request.url),
