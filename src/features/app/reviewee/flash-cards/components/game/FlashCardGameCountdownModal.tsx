@@ -53,14 +53,18 @@ export default function FlashCardGameCountdownModal(
       <div className="px-6 py-8 sm:px-10 sm:py-9">
         <p className="text-xl font-semibold text-primary-text">Get Ready!</p>
         <p className="mt-2 text-xl font-semibold text-secondary-text">
-          Game is starting in
+          {flashCardGameCountdownModal.areSoundsReady
+            ? "Game is starting in"
+            : "Preparing game sounds"}
         </p>
         <div
           className="my-7 min-h-24 text-8xl font-semibold tabular-nums text-primary-accent transition-opacity duration-300"
           aria-live="assertive"
           aria-atomic="true"
         >
-          {flashCardGameCountdownModal.countdown > 0 ? (
+          {!flashCardGameCountdownModal.areSoundsReady ? (
+            <LoaderCircle className="mx-auto h-14 w-14 animate-spin" />
+          ) : flashCardGameCountdownModal.countdown > 0 ? (
             flashCardGameCountdownModal.countdown
           ) : flashCardGameCountdownModal.isStarting ? (
             <LoaderCircle className="mx-auto h-14 w-14 animate-spin" />

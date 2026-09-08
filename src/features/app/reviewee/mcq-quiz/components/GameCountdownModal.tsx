@@ -56,14 +56,18 @@ export default function GameCountdownModal(props: GameCountdownModalProps) {
       <div className="px-6 py-8 sm:px-10 sm:py-9">
         <p className="text-xl font-semibold text-primary-text">Get Ready!</p>
         <p className="mt-2 text-xl font-semibold text-secondary-text">
-          Game is starting in
+          {gameCountdownModal.areSoundsReady
+            ? "Game is starting in"
+            : "Preparing game sounds"}
         </p>
         <div
           className="my-7 min-h-24 text-8xl font-semibold tabular-nums text-primary-accent transition-opacity duration-300"
           aria-live="assertive"
           aria-atomic="true"
         >
-          {gameCountdownModal.countdown > 0 ? (
+          {!gameCountdownModal.areSoundsReady ? (
+            <LoaderCircle className="mx-auto h-14 w-14 animate-spin" />
+          ) : gameCountdownModal.countdown > 0 ? (
             gameCountdownModal.countdown
           ) : gameCountdownModal.isStarting ? (
             <LoaderCircle className="mx-auto h-14 w-14 animate-spin" />

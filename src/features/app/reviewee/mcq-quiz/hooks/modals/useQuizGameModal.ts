@@ -76,7 +76,12 @@ export const useQuizGameModal = ({
   const [isExitConfirmationOpen, setIsExitConfirmationOpen] = useState(false);
   const [isQuestionVisible, setIsQuestionVisible] = useState(true);
   const [retryVersion, setRetryVersion] = useState(0);
-  const { playCountdownCue } = useGameSounds();
+  const {
+    playCorrectAnswerCue,
+    playCountdownCue,
+    playWrongAnswerCue,
+    prepareCountdownCue,
+  } = useGameSounds();
 
   const handleRequestClose = useCallback(() => {
     if (isExitConfirmationOpen) return;
@@ -112,6 +117,7 @@ export const useQuizGameModal = ({
       phaseDeadlineRef.current = 0;
       timeoutRecordedRef.current = false;
       lastCriticalCueRef.current = null;
+      prepareCountdownCue();
       isTimingReadyRef.current = true;
       setCurrentTiming(timing);
       setRemainingSeconds(preparedSession?.timerSeconds ?? 0);
@@ -120,7 +126,7 @@ export const useQuizGameModal = ({
       setError("");
       setPhase("answering");
     },
-    [preparedSession?.timerSeconds],
+    [prepareCountdownCue, preparedSession?.timerSeconds],
   );
 
   useEffect(() => {
@@ -293,11 +299,21 @@ export const useQuizGameModal = ({
       return;
     }
 
+    if (result.answer.isCorrect) {
+      playCorrectAnswerCue();
+    } else {
+      playWrongAnswerCue();
+    }
+
     setAnswerReveal(result.answer);
     setPhase("result");
     phaseDeadlineRef.current = performance.now() + 3000;
     isActionInProgressRef.current = false;
-  }, [currentTiming]);
+  }, [
+    currentTiming,
+    playCorrectAnswerCue,
+    playWrongAnswerCue,
+  ]);
 
   const resolveTimedOutQuestion = useCallback(async () => {
     if (

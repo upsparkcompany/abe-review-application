@@ -36,7 +36,11 @@ export const useGameCountdownModal = ({
   const [countdown, setCountdown] = useState(3);
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState("");
-  const { playCountdownCue, playCountdownStartCue } = useGameSounds();
+  const {
+    areSoundsReady,
+    playCountdownCue,
+    playCountdownStartCue,
+  } = useGameSounds();
   const modalAccessibility = useQuizModalAccessibility({
     isOpen,
   });
@@ -88,7 +92,7 @@ export const useGameCountdownModal = ({
   }, [onNoQuestions, onStarted, sessionPreview]);
 
   useEffect(() => {
-    if (!isOpen || !sessionPreview) return;
+    if (!isOpen || !sessionPreview || !areSoundsReady) return;
 
     const countdownStartedAt = Date.now();
     cancelledRef.current = false;
@@ -141,6 +145,7 @@ export const useGameCountdownModal = ({
       clearTimeout(startTimeout);
     };
   }, [
+    areSoundsReady,
     beginStart,
     isOpen,
     playCountdownCue,
@@ -170,6 +175,7 @@ export const useGameCountdownModal = ({
     error,
     handleCancel,
     isStarting,
+    areSoundsReady,
     modalAccessibility,
   };
 };

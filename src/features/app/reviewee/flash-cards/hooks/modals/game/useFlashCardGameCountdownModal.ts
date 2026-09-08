@@ -33,22 +33,11 @@ export const useFlashCardGameCountdownModal = ({
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState("");
   const modalAccessibility = useQuizModalAccessibility({ isOpen });
-  const { playCountdownCue, playCountdownStartCue } = useGameSounds();
-
-  useEffect(() => {
-    if (!isOpen) {
-      lastPlayedCountdownRef.current = null;
-      return;
-    }
-
-    if (
-      countdown > 0 &&
-      lastPlayedCountdownRef.current !== countdown
-    ) {
-      lastPlayedCountdownRef.current = countdown;
-      playCountdownCue();
-    }
-  }, [countdown, isOpen, playCountdownCue]);
+  const {
+    areSoundsReady,
+    playCountdownCue,
+    playCountdownStartCue,
+  } = useGameSounds();
 
   const beginStart = useCallback(async () => {
     if (
@@ -95,11 +84,15 @@ export const useFlashCardGameCountdownModal = ({
   ]);
 
   useEffect(() => {
-    if (!isOpen || !countdownDetails) return;
+    if (!isOpen || !countdownDetails || !areSoundsReady) return;
 
     const countdownStartedAt = Date.now();
     cancelledRef.current = false;
     actionInProgressRef.current = false;
+    if (lastPlayedCountdownRef.current !== 3) {
+      lastPlayedCountdownRef.current = 3;
+      playCountdownCue();
+    }
     void Promise.resolve().then(() => {
       setCountdown(3);
       setError("");
@@ -110,7 +103,17 @@ export const useFlashCardGameCountdownModal = ({
       const elapsedSeconds = Math.floor(
         (Date.now() - countdownStartedAt) / 1000,
       );
-      setCountdown(Math.max(0, 3 - elapsedSeconds));
+      const nextCountdown = Math.max(0, 3 - elapsedSeconds);
+
+      if (
+        nextCountdown > 0 &&
+        nextCountdown !== lastPlayedCountdownRef.current
+      ) {
+        lastPlayedCountdownRef.current = nextCountdown;
+        playCountdownCue();
+      }
+
+      setCountdown(nextCountdown);
     }, 100);
 
     const startTimeout = setTimeout(() => {
@@ -121,7 +124,19 @@ export const useFlashCardGameCountdownModal = ({
       clearInterval(interval);
       clearTimeout(startTimeout);
     };
-  }, [beginStart, countdownDetails, isOpen]);
+  }, [
+    areSoundsReady,
+    beginStart,
+    countdownDetails,
+    isOpen,
+    playCountdownCue,
+  ]);
+
+  useEffect(() => {
+    if (isOpen) return;
+
+    lastPlayedCountdownRef.current = null;
+  }, [isOpen]);
 
   const handleCancel = () => {
     if (!countdownDetails || isStarting || actionInProgressRef.current) {
@@ -137,6 +152,7 @@ export const useFlashCardGameCountdownModal = ({
     error,
     handleCancel,
     isStarting,
+    areSoundsReady,
     modalAccessibility,
   };
 };
