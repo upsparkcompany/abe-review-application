@@ -74,7 +74,7 @@ export default function QuestionListModal({
         ></div>
 
         <div
-          className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-[935px] overflow-y-auto rounded-md bg-surface p-5 shadow-xl transition-all duration-300 ease-out sm:max-h-[88vh] sm:p-10 ${
+          className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-[935px] overflow-y-auto rounded-md bg-surface p-5 shadow-xl transition-all duration-300 ease-out sm:p-10 ${
             modalAnimation.isModalVisible
               ? "translate-y-0 scale-100 opacity-100"
               : "-translate-y-4 scale-95 opacity-0"

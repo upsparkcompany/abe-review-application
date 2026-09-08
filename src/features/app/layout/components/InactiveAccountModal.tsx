@@ -25,7 +25,7 @@ export default function InactiveAccountModal({
         aria-modal="true"
         aria-labelledby="inactive-account-title"
         aria-describedby="inactive-account-description"
-        className="w-full max-w-lg rounded-2xl border border-border bg-surface p-6 text-center shadow-2xl outline-none sm:p-8"
+        className="max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-surface p-6 text-center shadow-2xl outline-none sm:p-8"
       >
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-50 text-amber-600">
           <ExclamationTriangleIcon className="h-9 w-9" aria-hidden="true" />

@@ -52,7 +52,7 @@ export default function DeleteFlashCardConfirmationModal({
       <form
         ref={deleteFlashCardConfirmationModal.dialogRef}
         onSubmit={deleteFlashCardConfirmationModal.handleDeleteFlashCard}
-        className={`relative w-full max-w-[580px] rounded-md bg-surface px-6 py-9 shadow-xl transition-all duration-300 ease-out sm:px-10 sm:py-10 ${
+        className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-[580px] overflow-y-auto rounded-md bg-surface px-6 py-9 shadow-xl transition-all duration-300 ease-out sm:px-10 sm:py-10 ${
           modalAnimation.isModalVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "-translate-y-4 scale-95 opacity-0"

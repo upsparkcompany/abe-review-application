@@ -71,7 +71,7 @@ export default function QuestionFormModal({
       ></div>
 
       <div
-        className={`relative max-h-[88vh] w-full max-w-[760px] overflow-hidden rounded-md bg-surface shadow-xl transition-all duration-300 ease-out sm:overflow-y-auto sm:p-9 ${
+        className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-[760px] overflow-hidden rounded-md bg-surface shadow-xl transition-all duration-300 ease-out sm:overflow-y-auto sm:p-9 ${
           modalAnimation.isModalVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "-translate-y-4 scale-95 opacity-0"

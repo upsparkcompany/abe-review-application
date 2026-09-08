@@ -41,7 +41,7 @@ export const ResendInvitationConfirmationModal = (
         ref={modal.dialogRef}
         inert={!isOpen}
         onSubmit={modal.handleResend}
-        className={`relative w-full max-w-[580px] rounded-md bg-surface p-7 shadow-xl transition-all duration-300 ease-out sm:p-10 ${
+        className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-[580px] overflow-y-auto rounded-md bg-surface p-7 shadow-xl transition-all duration-300 ease-out sm:p-10 ${
           isOpen
             ? "translate-y-0 scale-100 opacity-100"
             : "-translate-y-4 scale-95 opacity-0"

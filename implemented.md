@@ -131,3 +131,5 @@
 - Modal inputs, textareas, search fields, and selects do not receive initial programmatic focus; modals focus their non-editable dialog container instead so Android browsers do not open the keyboard on launch.
 - Activity History: review streaks now stay active through the following Asia/Manila day only, reset to zero after two missed days, and display in weeks after seven days or months after four weeks.
 - Activity History: review streak uses a friendly sad-face illustration when the effective streak is zero and the fire illustration for every active streak.
+- Modal behavior: dialog content uses its natural height until constrained by the available dynamic viewport height, then scrolls internally; mobile MCQ and flash-card gameplay remain full-screen with their option or answer region scrollable.
+- Activity-history details clear their cached state on close so loading a new session begins with the generic Activity Details header.

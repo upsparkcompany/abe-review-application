@@ -49,7 +49,7 @@ export default function QuizModalShell({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className={`relative z-10 w-full rounded-lg bg-surface shadow-xl transition-all duration-300 ease-out outline-none motion-reduce:transform-none motion-reduce:transition-none ${
+        className={`relative z-10 max-h-[calc(100dvh-2rem)] w-full overflow-y-auto rounded-lg bg-surface shadow-xl transition-all duration-300 ease-out outline-none motion-reduce:transform-none motion-reduce:transition-none ${
           isVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "-translate-y-4 scale-95 opacity-0"

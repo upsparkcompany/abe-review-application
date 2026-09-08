@@ -23,10 +23,19 @@ export const useHistoryDetailsModal = ({
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const resetDetails = useCallback(() => {
+    setDetails(null);
+    setError("");
+    setIsLoading(false);
+    setCurrentPage(1);
+  }, []);
+
   const handleClose = useCallback(() => {
     requestIdRef.current += 1;
+    resetDetails();
     onClose();
-  }, [onClose]);
+  }, [onClose, resetDetails]);
   const modalAccessibility = useQuizModalAccessibility({
     initialFocusRef: closeButtonRef,
     isOpen,
@@ -59,6 +68,7 @@ export const useHistoryDetailsModal = ({
   useEffect(() => {
     if (!isOpen || sessionId === null) {
       requestIdRef.current += 1;
+      resetDetails();
       return;
     }
 
@@ -67,7 +77,7 @@ export const useHistoryDetailsModal = ({
     return () => {
       requestIdRef.current += 1;
     };
-  }, [sessionId, isOpen, loadDetails]);
+  }, [sessionId, isOpen, loadDetails, resetDetails]);
 
   const totalItemPages = Math.max(
     1,

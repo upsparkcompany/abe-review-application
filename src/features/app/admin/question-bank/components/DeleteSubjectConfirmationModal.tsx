@@ -58,7 +58,7 @@ export default function DeleteSubjectConfirmationModal({
       <form
         ref={deleteSubjectConfirmationModal.dialogRef}
         onSubmit={deleteSubjectConfirmationModal.handleDeleteSubject}
-        className={`relative w-full max-w-[580px] rounded-md bg-surface p-10 shadow-xl transition-all duration-300 ease-out ${
+        className={`relative max-h-[calc(100dvh-2rem)] w-full max-w-[580px] overflow-y-auto rounded-md bg-surface p-10 shadow-xl transition-all duration-300 ease-out ${
           modalAnimation.isModalVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "-translate-y-4 scale-95 opacity-0"

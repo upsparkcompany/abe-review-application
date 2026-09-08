@@ -42,7 +42,7 @@ export const UserFormModal = (props: UserFormModalProps) => {
         <div
           ref={modal.dialogRef}
           tabIndex={-1}
-          className={`relative max-h-[calc(100vh-3rem)] w-full max-w-[525px] overflow-hidden rounded-lg bg-surface shadow-xl transition-all duration-300 sm:overflow-y-auto sm:px-9 sm:py-10 ${
+          className={`relative max-h-[calc(100dvh-3rem)] w-full max-w-[525px] overflow-hidden rounded-lg bg-surface shadow-xl transition-all duration-300 sm:overflow-y-auto sm:px-9 sm:py-10 ${
             props.isOpen ? "translate-y-0 scale-100" : "-translate-y-3 scale-95"
           }`}
         >

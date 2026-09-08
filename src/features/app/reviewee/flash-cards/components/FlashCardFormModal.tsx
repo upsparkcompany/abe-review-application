@@ -54,7 +54,7 @@ export default function FlashCardFormModal({
       <div
         ref={flashCardFormModal.dialogRef}
         tabIndex={-1}
-        className={`relative max-h-[calc(100vh-3rem)] w-full max-w-[525px] overflow-y-auto rounded-md bg-surface px-6 py-8 shadow-xl transition-all duration-300 ease-out sm:px-9 sm:py-10 ${
+        className={`relative max-h-[calc(100dvh-3rem)] w-full max-w-[525px] overflow-y-auto rounded-md bg-surface px-6 py-8 shadow-xl transition-all duration-300 ease-out sm:px-9 sm:py-10 ${
           modalAnimation.isModalVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "-translate-y-4 scale-95 opacity-0"
