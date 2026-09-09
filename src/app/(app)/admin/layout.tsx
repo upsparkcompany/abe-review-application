@@ -1,7 +1,6 @@
-import { getAuthRouteIdentity } from "@/lib/auth/route-identity";
-import { SESSION_EXPIRED_REQUEST_HEADER } from "@/lib/auth/session-expiry";
+import { getAuthRouteAccess } from "@/lib/auth/session-expiry";
 import { createSupabaseServerComponentClient } from "@/lib/supabase/server-component";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function AdminLayout({
@@ -9,16 +8,22 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const requestHeaders = await headers();
+  const cookieStore = await cookies();
+  const supabase = await createSupabaseServerComponentClient();
+  const authRouteAccess = await getAuthRouteAccess(
+    supabase,
+    cookieStore.getAll(),
+  );
 
-  if (requestHeaders.get(SESSION_EXPIRED_REQUEST_HEADER) === "1") {
+  if (authRouteAccess.status === "missing-auth-cookie") {
+    redirect("/login");
+  }
+
+  if (authRouteAccess.status === "invalid-auth-cookie") {
     return children;
   }
 
-  const supabase = await createSupabaseServerComponentClient();
-  const identity = await getAuthRouteIdentity(supabase);
-
-  if (!identity.isAuthenticated) redirect("/login");
+  const identity = authRouteAccess.identity;
 
   if (!identity.roles.includes("admin")) redirect("/unauthorized");
 

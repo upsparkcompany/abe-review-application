@@ -1,9 +1,8 @@
 import AppLayoutClient from "@/components/AppLayoutClient";
 import type { AppRole } from "@/features/app/layout/types/appRole";
-import { getAuthRouteIdentity } from "@/lib/auth/route-identity";
-import { SESSION_EXPIRED_REQUEST_HEADER } from "@/lib/auth/session-expiry";
+import { getAuthRouteAccess } from "@/lib/auth/session-expiry";
 import { createSupabaseServerComponentClient } from "@/lib/supabase/server-component";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -12,11 +11,18 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const requestHeaders = await headers();
-  const isSessionExpired =
-    requestHeaders.get(SESSION_EXPIRED_REQUEST_HEADER) === "1";
+  const cookieStore = await cookies();
+  const supabase = await createSupabaseServerComponentClient();
+  const authRouteAccess = await getAuthRouteAccess(
+    supabase,
+    cookieStore.getAll(),
+  );
 
-  if (isSessionExpired) {
+  if (authRouteAccess.status === "missing-auth-cookie") {
+    redirect("/login");
+  }
+
+  if (authRouteAccess.status === "invalid-auth-cookie") {
     return (
       <AppLayoutClient initialIsInactive={false} initialSessionExpired role={null}>
         {null}
@@ -24,10 +30,15 @@ export default async function AppLayout({
     );
   }
 
-  const supabase = await createSupabaseServerComponentClient();
-  const identity = await getAuthRouteIdentity(supabase);
+  const identity = authRouteAccess.identity;
 
-  if (!identity.isAuthenticated || !identity.userId) redirect("/login");
+  if (!identity.userId) {
+    return (
+      <AppLayoutClient initialIsInactive={false} initialSessionExpired role={null}>
+        {null}
+      </AppLayoutClient>
+    );
+  }
 
   const role: AppRole | null = identity.assignedRole;
 

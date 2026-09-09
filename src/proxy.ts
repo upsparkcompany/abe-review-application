@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseProxyClient } from "./lib/supabase/proxy";
 
-import { getAuthRouteIdentity } from "./lib/auth/route-identity";
 import { protectedRoutes, authRoutes } from "./lib/auth/route-protection";
 import {
-  hasSupabaseAuthCookie,
+  getAuthRouteAccess,
   SESSION_EXPIRED_REQUEST_HEADER,
 } from "./lib/auth/session-expiry";
 import {
@@ -156,7 +155,6 @@ function createSessionExpiredResponse(
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
-  const hasAuthCookie = hasSupabaseAuthCookie(request.cookies.getAll());
 
   const { supabase, getResponse } = createSupabaseProxyClient(
     request,
@@ -169,17 +167,20 @@ export async function proxy(request: NextRequest) {
   const isAcceptInviteRoute = pathname.startsWith("/auth/accept-invite");
   const isRecoveryRequest = isAuthRecoveryRequest(request);
 
-  const identity = await getAuthRouteIdentity(supabase);
+  const authRouteAccess = await getAuthRouteAccess(
+    supabase,
+    request.cookies.getAll(),
+  );
   const supabaseResponse = getResponse();
 
   // 🔒 App protection
   if (
-    !identity.isAuthenticated &&
+    authRouteAccess.status !== "verified-session" &&
     !isAuthRoute &&
     !isAcceptInviteRoute &&
     pathname !== "/unauthorized"
   ) {
-    if (hasAuthCookie) {
+    if (authRouteAccess.status === "invalid-auth-cookie") {
       return createSessionExpiredResponse(request, supabaseResponse);
     }
 
@@ -193,8 +194,8 @@ export async function proxy(request: NextRequest) {
   // ✅ Already logged in, redirect to designated dashboard
   if (
     isAuthRoute &&
-    identity.isAuthenticated &&
-    identity.assignedDashboardPath &&
+    authRouteAccess.status === "verified-session" &&
+    authRouteAccess.identity.assignedDashboardPath &&
     !isRecoveryRequest
   ) {
     const authNotice = pathname.startsWith("/auth/forgot-password")
@@ -203,7 +204,7 @@ export async function proxy(request: NextRequest) {
         ? AUTH_NOTICES.resetPasswordAlreadyLoggedIn
         : AUTH_NOTICES.alreadyLoggedIn;
     const redirectUrl = new URL(
-      identity.assignedDashboardPath,
+      authRouteAccess.identity.assignedDashboardPath,
       request.url,
     );
     redirectUrl.searchParams.set(
@@ -218,7 +219,8 @@ export async function proxy(request: NextRequest) {
   for (const [route, allowedRoles] of Object.entries(protectedRoutes)) {
     if (pathname.startsWith(route)) {
       const authorized = allowedRoles.some((role) =>
-        identity.roles.includes(role),
+        authRouteAccess.status === "verified-session" &&
+        authRouteAccess.identity.roles.includes(role),
       );
 
       if (!authorized) {
