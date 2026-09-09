@@ -163,16 +163,14 @@ export default function QuizGameModal(props: QuizGameModalProps) {
             }`}
           >
             <div className="grid gap-4 sm:grid-cols-2">
-              {quizGameModal.currentQuestion.options.map((option, optionIndex) => (
+              {quizGameModal.randomizedOptions.map((option, optionIndex) => (
                 <QuizAnswerOption
                   key={option.id}
                   answerReveal={quizGameModal.answerReveal}
                   disabled={isAnswerLocked}
                   isSelected={quizGameModal.selectedOptionId === option.id}
                   label={
-                    OPTION_LABELS[option.sortOrder - 1] ??
-                    OPTION_LABELS[optionIndex] ??
-                    String(option.sortOrder)
+                    OPTION_LABELS[optionIndex] ?? String(optionIndex + 1)
                   }
                   onSelect={quizGameModal.handleSelectOption}
                   option={option}

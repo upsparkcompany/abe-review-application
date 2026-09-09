@@ -7,6 +7,7 @@ import { useQuizModalAccessibility } from "@/features/app/reviewee/mcq-quiz/hook
 import { useGameSounds } from "@/hooks/useGameSounds";
 import type {
   PreparedQuizSession,
+  PreparedQuizOption,
   QuizAnswerReveal,
   QuizQuestionTiming,
   QuizSummary,
@@ -30,6 +31,24 @@ const QUESTION_FADE_DURATION_MS = 300;
 
 const wait = (durationMs: number) =>
   new Promise((resolve) => setTimeout(resolve, durationMs));
+
+const shuffleQuizOptions = (options: PreparedQuizOption[]) => {
+  const shuffledOptions = [...options];
+
+  for (
+    let optionIndex = shuffledOptions.length - 1;
+    optionIndex > 0;
+    optionIndex -= 1
+  ) {
+    const randomIndex = Math.floor(Math.random() * (optionIndex + 1));
+    [shuffledOptions[optionIndex], shuffledOptions[randomIndex]] = [
+      shuffledOptions[randomIndex],
+      shuffledOptions[optionIndex],
+    ];
+  }
+
+  return shuffledOptions;
+};
 
 const requestQuizSessionExitOnPageHide = (sessionId: string) => {
   const body = JSON.stringify({ sessionId });
@@ -69,6 +88,9 @@ export const useQuizGameModal = ({
     preparedSession?.timerSeconds ?? 0,
   );
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+  const [randomizedOptions, setRandomizedOptions] = useState<
+    PreparedQuizOption[]
+  >([]);
   const [answerReveal, setAnswerReveal] = useState<QuizAnswerReveal | null>(
     null,
   );
@@ -119,14 +141,19 @@ export const useQuizGameModal = ({
       lastCriticalCueRef.current = null;
       prepareCountdownCue();
       isTimingReadyRef.current = true;
+      const question = preparedSession?.questions.find(
+        (sessionQuestion) =>
+          sessionQuestion.questionOrder === timing.questionOrder,
+      );
       setCurrentTiming(timing);
+      setRandomizedOptions(shuffleQuizOptions(question?.options ?? []));
       setRemainingSeconds(preparedSession?.timerSeconds ?? 0);
       setSelectedOptionId(null);
       setAnswerReveal(null);
       setError("");
       setPhase("answering");
     },
-    [prepareCountdownCue, preparedSession?.timerSeconds],
+    [prepareCountdownCue, preparedSession],
   );
 
   useEffect(() => {
@@ -498,6 +525,7 @@ export const useQuizGameModal = ({
     isQuestionVisible,
     modalAccessibility,
     phase,
+    randomizedOptions,
     remainingSeconds,
     selectedOptionId,
   };
