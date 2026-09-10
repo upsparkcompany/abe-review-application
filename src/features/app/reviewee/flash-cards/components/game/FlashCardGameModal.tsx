@@ -29,8 +29,7 @@ export default function FlashCardGameModal(props: FlashCardGameModalProps) {
 
   const isAnswerLocked = flashCardGameModal.phase !== "answering";
   const showResult =
-    (flashCardGameModal.phase === "result" ||
-      flashCardGameModal.phase === "transitioning") &&
+    flashCardGameModal.phase === "result" &&
     flashCardGameModal.answerReveal !== null;
   const showTimer =
     flashCardGameModal.phase !== "result" &&

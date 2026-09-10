@@ -32,7 +32,7 @@ export const useGameSelectionModal = ({
   const [selectionOptions, setSelectionOptions] = useState<QuizArea[]>([]);
   const [selectedOptionId, setSelectedOptionId] = useState("");
   const [difficulty, setDifficulty] = useState<QuizDifficulty>("Easy");
-  const [isLoadingAreas, setIsLoadingAreas] = useState(false);
+  const [isLoadingAreas, setIsLoadingAreas] = useState(true);
   const [isPreparing, setIsPreparing] = useState(false);
   const [error, setError] = useState("");
   const modalAccessibility = useQuizModalAccessibility({
@@ -90,6 +90,7 @@ export const useGameSelectionModal = ({
     const resetTimeout = setTimeout(() => {
       setDifficulty("Easy");
       setError("");
+      setIsLoadingAreas(true);
       setIsPreparing(false);
     }, 300);
 

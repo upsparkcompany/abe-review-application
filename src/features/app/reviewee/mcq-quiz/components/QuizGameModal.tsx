@@ -32,9 +32,7 @@ export default function QuizGameModal(props: QuizGameModalProps) {
 
   const isAnswerLocked = quizGameModal.phase !== "answering";
   const showResult =
-    (quizGameModal.phase === "result" ||
-      quizGameModal.phase === "transitioning") &&
-    quizGameModal.answerReveal !== null;
+    quizGameModal.phase === "result" && quizGameModal.answerReveal !== null;
   const showTimer =
     quizGameModal.phase !== "result" &&
     quizGameModal.phase !== "transitioning";
@@ -121,9 +119,10 @@ export default function QuizGameModal(props: QuizGameModalProps) {
                   aria-live="polite"
                   aria-hidden={!showResult}
                 >
-                  {resultIsCorrect
-                    ? "Great job! You got the correct answer."
-                    : "That answer is incorrect."}
+                  {quizGameModal.answerReveal &&
+                    (resultIsCorrect
+                      ? "Great job! You got the correct answer."
+                      : "That answer is incorrect.")}
                 </p>
               </div>
 
