@@ -58,6 +58,7 @@ export default function RevieweeMcqQuizPage() {
       <GameSelectionModal
         gameType={mcqQuiz.selectedGameType}
         isOpen={mcqQuiz.stage === "selection"}
+        selectionOptionsCache={mcqQuiz.selectionOptionsCache}
         onClose={mcqQuiz.closeGameSelection}
         onNoQuestions={mcqQuiz.handleNoQuestions}
         onPreviewed={mcqQuiz.handleSessionPreviewed}

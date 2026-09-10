@@ -9,6 +9,7 @@ import type {
   QuizSummary,
 } from "@/features/app/reviewee/mcq-quiz/types/quiz";
 import { useTodaysTriviaCard } from "@/features/app/reviewee/trivia/hooks/useTodaysTriviaCard";
+import { useGameSelectionOptionsCache } from "@/features/app/reviewee/mcq-quiz/hooks/useGameSelectionOptionsCache";
 
 export type RevieweeMcqQuizStage =
   | "idle"
@@ -21,6 +22,7 @@ const DEFAULT_NO_QUESTIONS_MESSAGE =
   "There are no questions available for this area and difficulty yet.";
 
 export const useRevieweeMcqQuiz = () => {
+  const selectionOptionsCache = useGameSelectionOptionsCache();
   const pageDataQuery = useQuery({
     queryKey: ["reviewee", "mcq-quiz", "page-data"],
     queryFn: fetchRevieweeMcqQuizPageData,
@@ -145,6 +147,7 @@ export const useRevieweeMcqQuiz = () => {
     preparedSession,
     resetMcqQuizGame,
     selectedGameType,
+    selectionOptionsCache,
     sessionPreview,
     stage,
     summary,

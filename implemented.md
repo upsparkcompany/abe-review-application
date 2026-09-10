@@ -136,3 +136,4 @@
 - Activity-history details clear their cached state on close so loading a new session begins with the generic Activity Details header.
 - Authentication: protected routes with no auth cookie redirect immediately to login, while invalid Supabase auth cookies display a non-dismissible blurred session-expired modal in the current dashboard URL before local sign-out and an automatic login redirect.
 - Authentication: proxy, protected layouts, and the root route share explicit missing-cookie, verified-session, and invalid-cookie access states so only missing cookies redirect immediately and invalid cookies can render the session-expired state.
+- Reviewee MCQ Quiz: successful quiz-area and PAES-subject selection requests are cached for the authenticated SPA session, so reopening compatible game setups after navigation uses the already loaded options; the cache clears on browser reload or logout.

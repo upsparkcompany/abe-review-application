@@ -10,10 +10,12 @@ import type {
   QuizSessionPreview,
 } from "@/features/app/reviewee/mcq-quiz/types/quiz";
 import { useQuizModalAccessibility } from "@/features/app/reviewee/mcq-quiz/hooks/modals/useQuizModalAccessibility";
+import type { GameSelectionOptionsCache } from "@/features/app/reviewee/mcq-quiz/hooks/useGameSelectionOptionsCache";
 
 type UseGameSelectionModalOptions = {
   gameType: QuizGameType | null;
   isOpen: boolean;
+  selectionOptionsCache: GameSelectionOptionsCache;
   onClose: () => void;
   onNoQuestions: (message?: string) => void;
   onPreviewed: (preview: QuizSessionPreview) => void;
@@ -24,12 +26,15 @@ const QUIZ_DIFFICULTIES: QuizDifficulty[] = ["Easy", "Medium", "Hard"];
 export const useGameSelectionModal = ({
   gameType,
   isOpen,
+  selectionOptionsCache,
   onClose,
   onNoQuestions,
   onPreviewed,
 }: UseGameSelectionModalOptions) => {
   const requestIdRef = useRef(0);
   const [selectionOptions, setSelectionOptions] = useState<QuizArea[]>([]);
+  const [selectionOptionsGameType, setSelectionOptionsGameType] =
+    useState<QuizGameType | null>(null);
   const [selectedOptionId, setSelectedOptionId] = useState("");
   const [difficulty, setDifficulty] = useState<QuizDifficulty>("Easy");
   const [isLoadingAreas, setIsLoadingAreas] = useState(true);
@@ -40,6 +45,13 @@ export const useGameSelectionModal = ({
     onClose: isPreparing ? undefined : onClose,
   });
   const isPaesGame = gameType === "PAES";
+  const cachedSelectionOptions = isPaesGame
+    ? selectionOptionsCache.getPaesSubjects()
+    : selectionOptionsCache.getQuizAreas();
+  const activeSelectedOptionId =
+    selectionOptionsGameType === gameType
+      ? selectedOptionId
+      : String(cachedSelectionOptions?.[0]?.id ?? "");
 
   useEffect(() => {
     if (!isOpen || !gameType) return;
@@ -47,16 +59,45 @@ export const useGameSelectionModal = ({
     const activeRequestId = requestIdRef.current + 1;
     requestIdRef.current = activeRequestId;
     void Promise.resolve().then(async () => {
+      const cachedOptions = isPaesGame
+        ? selectionOptionsCache.getPaesSubjects()
+        : selectionOptionsCache.getQuizAreas();
+
+      if (cachedOptions) {
+        setSelectionOptions(cachedOptions);
+        setSelectionOptionsGameType(gameType);
+        setSelectedOptionId((currentOptionId) => {
+          const optionStillExists = cachedOptions.some(
+            (option) => String(option.id) === currentOptionId,
+          );
+
+          return optionStillExists
+            ? currentOptionId
+            : String(cachedOptions[0]?.id ?? "");
+        });
+        setIsLoadingAreas(false);
+        return;
+      }
+
       setIsLoadingAreas(true);
       setError("");
       const result = isPaesGame
         ? await fetchPaesSubjects()
         : await fetchQuizAreas();
 
+      if (result.success) {
+        if ("subjects" in result) {
+          selectionOptionsCache.setPaesSubjects(result.subjects);
+        } else {
+          selectionOptionsCache.setQuizAreas(result.areas);
+        }
+      }
+
       if (requestIdRef.current !== activeRequestId) return;
 
       if (!result.success) {
         setSelectionOptions([]);
+        setSelectionOptionsGameType(gameType);
         setSelectedOptionId("");
         setError(
           result.error ??
@@ -65,6 +106,7 @@ export const useGameSelectionModal = ({
       } else {
         const options = "subjects" in result ? result.subjects : result.areas;
         setSelectionOptions(options);
+        setSelectionOptionsGameType(gameType);
         setSelectedOptionId((currentOptionId) => {
           const optionStillExists = options.some(
             (option) => String(option.id) === currentOptionId,
@@ -82,7 +124,7 @@ export const useGameSelectionModal = ({
     return () => {
       requestIdRef.current += 1;
     };
-  }, [gameType, isOpen, isPaesGame]);
+  }, [gameType, isOpen, isPaesGame, selectionOptionsCache]);
 
   useEffect(() => {
     if (isOpen) return;
@@ -105,7 +147,7 @@ export const useGameSelectionModal = ({
   const handleStartNow = async () => {
     if (!gameType || isPreparing) return;
 
-    const selectedId = Number(selectedOptionId);
+    const selectedId = Number(activeSelectedOptionId);
 
     if (!Number.isInteger(selectedId) || selectedId <= 0) {
       setError(`Please select ${isPaesGame ? "a PAES subject" : "an area"}.`);
@@ -147,13 +189,13 @@ export const useGameSelectionModal = ({
     error,
     handleClose,
     handleStartNow,
-    isLoadingAreas,
+    isLoadingAreas: isLoadingAreas && !cachedSelectionOptions,
     isPreparing,
     modalAccessibility,
     isPaesGame,
     quizDifficulties: QUIZ_DIFFICULTIES,
-    selectedOptionId,
-    selectionOptions,
+    selectedOptionId: activeSelectedOptionId,
+    selectionOptions: cachedSelectionOptions ?? selectionOptions,
     setDifficulty,
     setSelectedOptionId,
   };

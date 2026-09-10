@@ -2,12 +2,14 @@ import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { LoaderCircle } from "lucide-react";
 import QuizModalShell from "@/features/app/reviewee/mcq-quiz/components/QuizModalShell";
 import { useGameSelectionModal } from "@/features/app/reviewee/mcq-quiz/hooks/modals/useGameSelectionModal";
+import type { GameSelectionOptionsCache } from "@/features/app/reviewee/mcq-quiz/hooks/useGameSelectionOptionsCache";
 import type {
   QuizGameType,
   QuizSessionPreview,
 } from "@/features/app/reviewee/mcq-quiz/types/quiz";
 
 export type GameSelectionModalProps = {
+  selectionOptionsCache: GameSelectionOptionsCache;
   gameType: QuizGameType | null;
   isOpen: boolean;
   onClose: () => void;
