@@ -21,3 +21,5 @@ export default async function Home() {
 
   redirect("/unauthorized");
 }
+
+// Just to reset recent commits
